@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">InfiniteScrollView</string>
-    <string name="open">Open</string>
+    <string name="show_products">Show Products</string>
     <string name="title_activity_products">ProductsActivity</string>
+    <string name="globle_yes">Yes</string>
+    <string name="globle_no">No</string>
+    <string name="shop">Shop</string>
+    <string name="show_product_dialog_title">Shop</string>
+    <string name="show_product_dialog_body">Do yo want to shop this product</string>
 </resources>

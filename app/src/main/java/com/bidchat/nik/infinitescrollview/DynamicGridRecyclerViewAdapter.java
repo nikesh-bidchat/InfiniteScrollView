@@ -15,7 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerViewAdapter.ViewHolder> {
+class DynamicGridRecyclerViewAdapter extends RecyclerView.Adapter<DynamicGridRecyclerViewAdapter.ViewHolder> {
 
     private Context mContext;
     private ArrayList<String> mArrImageUrl;
@@ -25,7 +25,7 @@ class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerViewAdapt
     private int lastVisibleItem, totalItemCount;
     private boolean isLoading;
 
-    public GridRecyclerViewAdapter(Context context, ArrayList<String> arrImageUrl, RecyclerView recyclerView) {
+    public DynamicGridRecyclerViewAdapter(Context context, ArrayList<String> arrImageUrl, RecyclerView recyclerView) {
         mContext = context;
         mArrImageUrl = arrImageUrl;
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
@@ -97,7 +97,7 @@ class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerViewAdapt
             FrameLayout.LayoutParams buttonDummyLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
             buttonDummyLayoutParams.gravity = Gravity.CENTER;
             buttonDummy.setLayoutParams(buttonDummyLayoutParams);
-            buttonDummy.setText(mContext.getString(R.string.open));
+            buttonDummy.setText(mContext.getString(R.string.show_products));
             mView.addView(buttonDummy);
         }
     }
