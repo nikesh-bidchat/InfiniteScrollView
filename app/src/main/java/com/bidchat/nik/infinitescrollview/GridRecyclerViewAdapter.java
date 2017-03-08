@@ -69,7 +69,7 @@ class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerViewAdapt
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Picasso.with(mContext)
                 .load(mArrImageUrl.get(position))
-                .placeholder(R.drawable.ic_place_holder)
+                .placeholder(R.drawable.progress_animation)
                 .error(R.drawable.ic_error_place_holder)
                 .into(holder.imageBackground);
     }

@@ -6,9 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import java.io.IOException;
@@ -30,9 +33,10 @@ public class ProductsActivity extends AppCompatActivity {
     public static final int INTERVAL = 10;
     private int mPageNo = 1;
 
-    public final int GRID_COLUMNS=2;
+    public final int GRID_COLUMNS = 2;
 
     GridLayoutManager lLayout;
+    private ProgressBar mProgressBar;
 
 
     @Override
@@ -52,23 +56,38 @@ public class ProductsActivity extends AppCompatActivity {
     public void initGallery() {
         final ViewGroup rootView = (ViewGroup) findViewById(android.R.id.content);
 
+        FrameLayout relativeRootLayout = new FrameLayout(ProductsActivity.this);
+        relativeRootLayout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        relativeRootLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+        rootView.addView(relativeRootLayout);
+
         lLayout = new GridLayoutManager(ProductsActivity.this, GRID_COLUMNS);
         RecyclerView gridView = new RecyclerView(ProductsActivity.this);
-        gridView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        gridView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
         gridView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         gridView.setHasFixedSize(true);
         gridView.setLayoutManager(lLayout);
         mArrImageUrl = new ArrayList<>();
         mGridViewAdapter = new GridRecyclerViewAdapter(ProductsActivity.this, mArrImageUrl, gridView);
         gridView.setAdapter(mGridViewAdapter);
-        fetchProducts(mPageNo);
         mGridViewAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 fetchProducts(++mPageNo);
             }
         });
-        rootView.addView(gridView);
+        relativeRootLayout.addView(gridView);
+
+        mProgressBar = new ProgressBar(ProductsActivity.this);
+        mProgressBar.setProgressDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.custome_progressbar));
+        FrameLayout.LayoutParams loaderLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        loaderLayoutParams.gravity= Gravity.CENTER;
+        mProgressBar.setLayoutParams(loaderLayoutParams);
+        mProgressBar.setActivated(true);
+        mProgressBar.setVisibility(View.VISIBLE);
+        relativeRootLayout.addView(mProgressBar);
+
+        fetchProducts(mPageNo);
     }
 
     public void fetchProducts(int pageNo) {
@@ -93,6 +112,10 @@ public class ProductsActivity extends AppCompatActivity {
         call.enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (mProgressBar.isActivated()) {
+                    mProgressBar.setVisibility(View.GONE);
+                    mProgressBar.setActivated(false);
+                }
                 if (response.isSuccessful()) {
                     List<Product> products = response.body().getResults();
                     Log.d("Tag", "Number of products: " + products.size());
