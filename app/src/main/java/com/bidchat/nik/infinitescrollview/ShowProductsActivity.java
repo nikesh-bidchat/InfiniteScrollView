@@ -1,6 +1,8 @@
 package com.bidchat.nik.infinitescrollview;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +26,7 @@ public class ShowProductsActivity extends AppCompatActivity {
 
     private ArrayList<String> mArrImageUrl;
     private LayoutGridRecyclerViewAdapter mGridViewAdapter;
+    private RecyclerView gridView;
 
     public static final int INTERVAL = 8;
     private int mPageNo = 1;
@@ -31,10 +34,12 @@ public class ShowProductsActivity extends AppCompatActivity {
     public final int GRID_COLUMNS = 2;
 
     private ProgressBar mProgressBar;
-    private int mCurrentPage = 0;
-    private int lastPageItemsCount = 0;
+    // private int mCurrentPage = 0;
+    // private int lastPageItemsCount = 0;
 
     private boolean isLastPage = false;
+
+    private SwipeRefreshLayout swipeRefreshProducts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,7 @@ public class ShowProductsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_products);
 
         GridLayoutManager lLayout = new GridLayoutManager(this, GRID_COLUMNS);
-        RecyclerView gridView = (RecyclerView) findViewById(R.id.recycler_product_list);
+        gridView = (RecyclerView) findViewById(R.id.recycler_product_list);
         gridView.setLayoutManager(lLayout);
         mArrImageUrl = new ArrayList<>();
         mGridViewAdapter = new LayoutGridRecyclerViewAdapter(this, mArrImageUrl, gridView, getSupportFragmentManager());
@@ -50,10 +55,28 @@ public class ShowProductsActivity extends AppCompatActivity {
         mGridViewAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
+                Log.d("Status", "isLastPage : " + isLastPage);
+                Log.d("Status", "isLoading : " + mGridViewAdapter.getIsLoading());
+                Log.d("Status", "mArrImageUrl Length : " + mArrImageUrl.size());
                 if (!isLastPage)
                     fetchProducts(++mPageNo);
             }
         });
+
+        swipeRefreshProducts = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_products);
+        swipeRefreshProducts.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        mPageNo = 1;
+                        isLastPage = false;
+                        swipeRefreshProducts.isRefreshing();
+                        mGridViewAdapter.setIsLoading(false);
+                        mArrImageUrl.clear();
+                        fetchProducts(mPageNo);
+                    }
+                }
+        );
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_loader);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -81,11 +104,7 @@ public class ShowProductsActivity extends AppCompatActivity {
         Call<ProductResponse> call = service.fetchProducts(COLLECTION_ID, INTERVAL, pageNo);
         call.enqueue(new Callback<ProductResponse>() {
             @Override
-            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                if (mProgressBar.isActivated()) {
-                    mProgressBar.setVisibility(View.GONE);
-                    mProgressBar.setActivated(false);
-                }
+            public void onResponse(Call<ProductResponse> call, final Response<ProductResponse> response) {
                 if (response.isSuccessful()) {
                     List<Product> products = response.body().getResults();
                     Log.d("Tag " + mPageNo, "Number of products: " + products.size());
@@ -97,8 +116,8 @@ public class ShowProductsActivity extends AppCompatActivity {
                         else
                             mArrImageUrl.add("no_image");
                     }
-                    mGridViewAdapter.notifyDataSetChanged();
-                    mGridViewAdapter.setIsLoading(false);
+                    if (products.size() != INTERVAL)
+                        isLastPage = true;
                     /*
                     if (products.size() != INTERVAL) {
                         if (mPageNo != mCurrentPage)
@@ -109,9 +128,22 @@ public class ShowProductsActivity extends AppCompatActivity {
                     }
                     mCurrentPage = mPageNo;
                     */
-                    if (products.size() != INTERVAL) {
-                        isLastPage = true;
-                    }
+                    Handler mainHandler = new Handler(getMainLooper());
+                    Runnable myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mProgressBar.isActivated()) {
+                                mProgressBar.setVisibility(View.GONE);
+                                mProgressBar.setActivated(false);
+                            }
+                            if (swipeRefreshProducts.isRefreshing()) {
+                                swipeRefreshProducts.setRefreshing(false);
+                            }
+                            mGridViewAdapter.notifyDataSetChanged();
+                            mGridViewAdapter.setIsLoading(false);
+                        } // This is your code
+                    };
+                    mainHandler.post(myRunnable);
                 } else {
                     try {
                         Log.d("Response", "Failure : " + response.errorBody().string());

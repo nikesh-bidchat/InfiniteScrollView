@@ -67,6 +67,10 @@ class LayoutGridRecyclerViewAdapter extends RecyclerView.Adapter<LayoutGridRecyc
         isLoading = value;
     }
 
+    public boolean getIsLoading() {
+        return  isLoading;
+    }
+
     void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
     }
