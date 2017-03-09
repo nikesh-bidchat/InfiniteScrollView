@@ -1,22 +1,20 @@
 package com.bidchat.nik.infinitescrollview;
 
-/**
- * Created by AndroidTest on 3/6/2017.
- */
-
+import com.bidchat.nik.infinitescrollview.model.Product;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+
+/**
+ * Created by Nikesh
+ * Created on 3/6/2017.
+ */
 
 public class ProductResponse {
     @SerializedName("products")
     private List<Product> results;
 
-    public List<Product> getResults() {
+    List<Product> getResults() {
         return results;
-    }
-
-    public void setResults(List<Product> results) {
-        this.results = results;
     }
 }

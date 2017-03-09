@@ -1,10 +1,10 @@
 
-package com.bidchat.nik.infinitescrollview;
-
-import java.util.List;
+package com.bidchat.nik.infinitescrollview.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class Product {
 
@@ -55,9 +55,11 @@ public class Product {
     private List<Image> images = null;
     @SerializedName("image")
     @Expose
-    private Image_ image;
+    private Image image;
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -175,11 +177,11 @@ public class Product {
         this.images = images;
     }
 
-    public Image_ getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(Image_ image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 

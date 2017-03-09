@@ -1,5 +1,5 @@
 
-package com.bidchat.nik.infinitescrollview;
+package com.bidchat.nik.infinitescrollview.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

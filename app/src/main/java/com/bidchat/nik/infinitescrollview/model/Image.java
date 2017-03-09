@@ -1,11 +1,11 @@
 
-package com.bidchat.nik.infinitescrollview;
+package com.bidchat.nik.infinitescrollview.model;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Image_ {
+public class Image {
 
     @SerializedName("id")
     @Expose
