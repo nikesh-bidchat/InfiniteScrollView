@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,14 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
     private OnLoadMoreListener onLoadMoreListener;
 
     private int lastVisibleItem, totalItemCount;
+
     private boolean isLoading;
+
+    public void setFirstTime(boolean firstTime) {
+        isFirstTime = firstTime;
+    }
+
+    private boolean isFirstTime=true;
 
     public ProductGridAdapter(Context context, List<Product> products, RecyclerView recyclerView) {
         this.context = context;
@@ -41,29 +49,28 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
                         public void onScrolled(RecyclerView recyclerView,
                                                int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
-                            totalItemCount = linearLayoutManager.getItemCount();
-                            lastVisibleItem = linearLayoutManager
-                                    .findLastVisibleItemPosition();
-                            if (!isLoading
-                                    && totalItemCount <= (lastVisibleItem + ShowProductsActivity.PAGE_SIZE)) {
-                                // End has been reached
-                                // Do something
-                                if (onLoadMoreListener != null) {
-                                    onLoadMoreListener.onLoadMore();
+                            Log.d("Crash Test", "onScrolled");
+
+                            if (!isLoading) {
+                                totalItemCount = linearLayoutManager.getItemCount();
+                                lastVisibleItem = linearLayoutManager
+                                        .findLastVisibleItemPosition();
+                                if (totalItemCount <= (lastVisibleItem + (ShowProductsActivity.PAGE_SIZE - ShowProductsActivity.GRID_COLUMNS))) {
+                                    // End has been reached
+                                    // Do something
+                                    if(!isFirstTime) {
+                                        if (onLoadMoreListener != null) {
+                                            onLoadMoreListener.onLoadMore();
+                                        }
+                                        isLoading = true;
+                                    }else{
+                                        isFirstTime=false;
+                                    }
                                 }
-                                isLoading = true;
                             }
                         }
                     });
         }
-    }
-
-    public void setIsLoading(boolean value) {
-        isLoading = value;
-    }
-
-    public boolean getIsLoading() {
-        return isLoading;
     }
 
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
@@ -116,5 +123,13 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
             imageProduct = (ImageView) view.findViewById(R.id.image_product);
             buttonShop = (Button) view.findViewById(R.id.button_shop);
         }
+    }
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public void setLoading(boolean loading) {
+        isLoading = loading;
     }
 } 

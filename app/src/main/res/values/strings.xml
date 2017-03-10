@@ -7,4 +7,7 @@
     <string name="shop">Shop</string>
     <string name="show_product_dialog_title">Shop</string>
     <string name="show_product_dialog_body">Do yo want to shop this product</string>
+    <string name="loadingProducts">Loading products&#8230;</string>
+    <string name="errorMessage">Something went wrong. Please try again later!.</string>
+    <string name="noProducts">No products.</string>
 </resources>

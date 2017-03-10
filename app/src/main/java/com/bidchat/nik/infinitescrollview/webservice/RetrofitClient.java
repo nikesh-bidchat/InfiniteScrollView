@@ -18,6 +18,7 @@ public class RetrofitClient {
     private final static String BASE_URL = "https://bidchat.myshopify.com";
 
     private RetrofitService restService;
+    private Retrofit retrofit;
 
     public RetrofitClient() {
         init(BASE_URL);
@@ -39,7 +40,7 @@ public class RetrofitClient {
                 .addInterceptor(logging)
                 .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(baseURL)
                 .client(httpClient)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -50,5 +51,9 @@ public class RetrofitClient {
 
     public RetrofitService getRestService() {
         return restService;
+    }
+
+    public Retrofit getRestClient() {
+        return retrofit;
     }
 }
